@@ -17,20 +17,16 @@ public class DictionaryCommandline {
         }
     }
     public void dictionarySeacher (){
-        try {
-            dictionaryManagement.insertFromFile(dictionary);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
         Scanner sc = new Scanner(System.in);
-        System.out.println("insert the string you want to know what are words contain");
+        System.out.println("insert the string you want to know what are words start with");
         String findWord = sc.nextLine();
         for (Word element : dictionary.dictArr) {
             if (element.getWord_target().startsWith(findWord)) {
                 System.out.println(element.getWord_target()+" : "+ element.getWord_explain());
             }
         }
-        //sc.close();
+
     }
     public void dictionaryBasic() {
         try {
