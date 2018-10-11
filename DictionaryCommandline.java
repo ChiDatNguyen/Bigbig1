@@ -1,69 +1,93 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package dictionary;
+package com.company;
+
+import java.io.FileNotFoundException;
+
 import java.util.Scanner;
-/**
- *
- * @author Admin
- */
+
 public class DictionaryCommandline {
-    public void showAllWords(Dictionary dictionary)
+    DictionaryManagement dictionaryManagement = new DictionaryManagement();
+    Dictionary dictionary = new Dictionary();
+    public void showAllWords()
     {
-        System.out.println("NO  | English   | Vietnamese");
-        for(int i=0;i<dictionary.getArray().size();i++)
-        {
-            System.out.println(i+1+"   | "+dictionary.getArray().get(i).getWordTarget()+"  | "+dictionary.getArray().get(i).getWordExplain());
+        System.out.printf("|%-7s|%-110s|%-50s|\n","No","English","Vietnamese");
+        int no = 1;
+        for (Word element: dictionary.dictArr){
+            System.out.printf("|%-7d|%-110s|%-50s|\n", no,element.getWord_target(),element.getWord_explain());
+            no++;
         }
     }
-    public void dictionaryBasic()
-    {
-        DictionaryManagement input=new DictionaryManagement();
-        Dictionary word=new Dictionary();
-        word=input.insertFromFile();
-        DictionaryCommandline output=new DictionaryCommandline();
-        output.showAllWords(word);
-    }
-    public void dictionaryAdvanced()
-    {
-        DictionaryManagement DictionaryInput=new DictionaryManagement();
-        Dictionary dictionary=new Dictionary();
-        dictionary=DictionaryInput.insertFromFile();//nhap list word
-        //show all
-        DictionaryCommandline DictionaryOutput=new DictionaryCommandline();
-        DictionaryOutput.showAllWords(dictionary);
-        //look up
-        String Word;
-        if((Word=DictionaryInput.dictionaryLookup(dictionary))!=null)
-        {
-            System.out.println("This word mean: "+Word);
+    public void dictionarySeacher (){
+        try {
+            dictionaryManagement.insertFromFile(dictionary);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        else
-        {
-            System.out.println("This word isn't in Dictionary");
-        }
-        //Fix Data
-        dictionary=DictionaryInput.FixData(dictionary);
-        DictionaryOutput.showAllWords(dictionary);
-        //Search
-        dictionarySearcher(dictionary);
-        //Export to File
-        DictionaryInput.dictionaryExportToFile(dictionary);
-    }
-    public void dictionarySearcher(Dictionary dictionary)
-    {
-       Scanner scanner=new Scanner(System.in);
-       System.out.println("Input the word: ");
-       String line = scanner.nextLine();
-        
-        for(int i=0;i<dictionary.getArray().size();i++)
-        {
-            if((dictionary.getArray().get(i).getWordTarget()).indexOf(line) > -1)
-            {
-                System.out.println(dictionary.getArray().get(i).getWordTarget());
+        Scanner sc = new Scanner(System.in);
+        System.out.println("insert the string you want to know what are words contain");
+        String findWord = sc.nextLine();
+        for (Word element : dictionary.dictArr) {
+            if (element.getWord_target().startsWith(findWord)) {
+                System.out.println(element.getWord_target()+" : "+ element.getWord_explain());
             }
         }
+        //sc.close();
+    }
+    public void dictionaryBasic() {
+        try {
+            dictionaryManagement.insertFromFile(dictionary);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("What do you want to do? Choose: ");
+        System.out.println("1.Insert from commandline");
+        System.out.println("2.Show all words of this dictionary");
+        Scanner sc = new Scanner(System.in);
+        int num = sc.nextInt();
+        switch (num){
+            case 1 :
+                dictionaryManagement.insertFromCommandline(dictionary);
+                dictionaryManagement.dictionaryExportToFile(dictionary);
+                break;
+
+            case 2 :
+                showAllWords();
+                break;
+            default:
+                System.out.println("Invalid");
+
+        }
+    }
+    public void dictionaryAdvance() {
+        try {
+            dictionaryManagement.insertFromFile(dictionary);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("What do you want to do? Choose: ");
+        System.out.println("1.Insert from commandline");
+        System.out.println("2.Show all words of this dictionary");
+        System.out.println("3.Delete word");
+        System.out.println("4.Look up word");
+        Scanner sc = new Scanner(System.in);
+        int num = sc.nextInt();
+        switch (num){
+            case 1 :
+                dictionaryManagement.insertFromCommandline(dictionary);
+                dictionaryManagement.dictionaryExportToFile(dictionary);
+                break;
+            case 2 :
+                showAllWords();
+                break;
+            case 3 :
+                dictionaryManagement.deleteWord(dictionary);
+                dictionaryManagement.dictionaryExportToFile(dictionary);
+                break;
+            case 4 :
+                dictionaryManagement.dictionaryLookup(dictionary.dictArr);
+                break;
+            default:
+                System.out.println("Invalid");
+        }
+
     }
 }

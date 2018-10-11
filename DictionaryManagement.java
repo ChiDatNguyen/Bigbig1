@@ -1,158 +1,95 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package dictionary;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.io.File;
-import java.io.FileReader;
-import java.io.BufferedReader;
+package com.company;
 
-import java.io.BufferedWriter;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-
-/**
- *
- * @author Admin
- */
 public class DictionaryManagement {
-    public Word setNewWord()
-    {
-        Scanner scanner=new Scanner(System.in);
-        Word NewWord=new Word();
-        System.out.println("Input word: ");
-        NewWord.setWordTarget(scanner.nextLine());
-        System.out.println("Input mean: ");
-        NewWord.setWordExplain(scanner.nextLine());
-        return NewWord;
-    }
-    public Dictionary insertFromCommandline(Dictionary dictionary)
-    {
-        Scanner scanner=new Scanner(System.in);
-        System.out.println("Input the number of word want to add: ");
-        int num= scanner.nextInt();
-        for(int i=0;i<num;i++)
-        {
-            dictionary.addWord(setNewWord());
+
+    public Dictionary insertFromCommandline(Dictionary dictionary) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("How many words do you want to insert");
+        int num = sc.nextInt();
+        sc.nextLine();
+        for (int i=0; i<num; i++){
+            System.out.println("insert English word "+ (i+1) );
+            String en = sc.nextLine();
+            System.out.println("insert Vietnamese word "+ (i+1));
+            String vn = sc.nextLine();
+            en.toLowerCase();
+            vn.toLowerCase();
+            dictionary.dictArr.add(new Word(en, vn));
+            System.out.println("added");
         }
+        //sc.close();
         return dictionary;
     }
-    public Dictionary insertFromFile() 
-    {
-        try
-        {
-            Dictionary Word=new Dictionary();
-            File file= new File("D:\\dic.txt");
-            FileReader Reader = new FileReader(file);
-            BufferedReader Buffer= new BufferedReader(Reader);
-            String count=Buffer.readLine();
-            while(count != null)
-            {
-                Word NewWord= new Word();
-                int i= count.lastIndexOf(9);//tab=9
-                NewWord.setWordTarget(count.substring(0,i));
-                NewWord.setWordExplain(count.substring(i));
-                Word.addWord(NewWord);
-                count=Buffer.readLine();
-            }
-            Reader.close();
-            Buffer.close();
-            return Word;
+
+    public Dictionary insertFromFile(Dictionary dictionary) throws FileNotFoundException {
+       // Dictionary dictionary = new Dictionary();
+        Scanner sc = new Scanner(new File("Data/VN-EN Dict.txt")).useDelimiter("\\s*:\\s*");
+        //Scanner sc = scanner.useDelimiter("\\s*:\\s*");
+        while (sc.hasNext()) {
+            String vn = sc.next();
+            String en = sc.nextLine();
+            en = en.substring(3);
+            vn.toLowerCase();
+            en.toUpperCase();
+            dictionary.dictArr.add(new Word(en, vn));
         }
-        catch(Exception ex)
-        {
-            System.out.println("Error: " +ex);
-        }
-        return null;
-    }
-    public String dictionaryLookup(Dictionary dictionary)
-    {
-        Scanner scanner=new Scanner(System.in);
-        System.out.println("Input word: ");
-        String line=scanner.nextLine();
-        for(int i=0;i<dictionary.getArray().size();i++)
-        {
-            if(line.equals(dictionary.getArray().get(i).getWordTarget()))
-            {
-                return dictionary.getArray().get(i).getWordExplain();
-            }
-        }
-        return null;
-    }
-    
-    public Dictionary FixData(Dictionary dictionary)
-    {
-        System.out.println("Select function:\n 1.Add\n 2.Delete\n 3.Fix");
-        Scanner scanner=new Scanner(System.in);
-        int select=scanner.nextInt();
-        if(select==1)
-        {
-            return addWord(dictionary);
-        }
-        else if(select==2)
-        {
-            return deleteWord(dictionary);
-        }
-        else if(select==3)
-        {
-            return fixWord(dictionary);
-        }
-        return null;
-    }
-    
-    public Dictionary addWord(Dictionary dictionary)
-    {
-        return insertFromCommandline(dictionary);
-    }
-    public Dictionary deleteWord(Dictionary dictionary) 
-    {
-        System.out.println("Delete word: ");
-        Scanner scanner=new Scanner(System.in);
-        String delete=scanner.nextLine();
-        for(int i=0;i<dictionary.getArray().size();i++)
-        {
-            if(delete.equals(dictionary.getArray().get(i).getWordTarget()))
-            {
-                dictionary.getArray().remove(dictionary.getArray().get(i));
-            }
-        }
+       // sc.close();
         return dictionary;
     }
-    public Dictionary fixWord(Dictionary dictionary)
-    {
-        System.out.println("The word that you want to fix: ");
-        Scanner scanner= new Scanner(System.in);
-        String editWord = scanner.nextLine();
-        for(int i=0;i<dictionary.getArray().size();i++){
-            if(editWord.equals(dictionary.getArray().get(i).getWordTarget()))
-            {
-                System.out.println("Fix word: ");
-                dictionary.getArray().get(i).setWordTarget(scanner.nextLine());
-                System.out.println("Fix word mean: ");
-                dictionary.getArray().get(i).setWordExplain(scanner.nextLine());
+
+    public void dictionaryLookup(ArrayList<Word> arr) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("insert the word you want to know its meaning");
+        String findWord = sc.nextLine();
+        for (Word element : arr) {
+            if (element.getWord_target().equals(findWord)) {
+                System.out.println(element.getWord_explain());
+                return;
             }
+
         }
-        return dictionary;
+        System.out.println("Can not find this word");
+        //sc.close();
     }
-    
     public void dictionaryExportToFile(Dictionary dictionary)
     {
         try
         {
-            File file=new File("D:\\dic.txt");
+            File file=new File("Data/VN-EN Dict.txt");
             FileWriter fw= new FileWriter(file);
-            for(int i=0;i<dictionary.getArray().size();i++)
+
+            for(int i=0;i<dictionary.dictArr.size();i++)
             {
-                fw.write(dictionary.getArray().get(i).getWordTarget()+(char)(9)+dictionary.getArray().get(i).getWordExplain()+"\n");
+                fw.write(dictionary.dictArr.get(i).getWord_explain()+" : "+dictionary.dictArr.get(i).getWord_target()+"\n");
             }
             fw.close();
-        } 
+        }
         catch(Exception ex){
             System.out.println("Error: " +ex);
         }
+    }
+    public void deleteWord (Dictionary dictionary){
+        try{
+            Scanner sc = new Scanner(System.in);
+            System.out.println("insert the word you want to delete in English");
+            String word = sc.nextLine();
+            for(Word element : dictionary.dictArr){
+                if (element.getWord_target().equals(word)) {
+                    dictionary.dictArr.remove(dictionary.dictArr.indexOf(element));
+
+                }
+            }
+        }
+        catch (Exception ex){
+            System.out.println("removed");;
+        }
+        //sc.close();
     }
 }
